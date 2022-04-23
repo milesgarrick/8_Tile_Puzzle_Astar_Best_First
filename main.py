@@ -1,15 +1,12 @@
-import sys
-import treelib
 import numpy
 import gc
-from copy import deepcopy
 
 
 goal_state = numpy.array([[1, 2, 3], [4, 5, 6], [7, 8, 0]])
 
 
 class Node:
-    def __init__(self, tiles: list, heuristic_h: int, heuristic_g: int, explored: bool, parent):
+    def __init__(self, tiles, heuristic_h: int, heuristic_g: int, explored: bool, parent):
         self.tiles = tiles
         self.heuristic_h = heuristic_h
         self.heuristic_g = heuristic_g
@@ -69,8 +66,8 @@ def get_manhattan(puzzle_state) -> int:
 
 def get_tiles_oop(puzzle_state) -> int:
     counter = 0
-    for i in range (0, 3):
-        for j in range (0, 3):
+    for i in range(0, 3):
+        for j in range(0, 3):
             if puzzle_state[i][j] != i + j + 1:
                 counter += 1
     return counter
@@ -108,14 +105,14 @@ def a_star(root, solution_nodes):
     # based on the current location of the blank tile
     if blank_loc[0] == 0:
         if blank_loc[1] == 0:
-            new_state1 = deepcopy(puzzle_state)
+            new_state1 = numpy.copy(puzzle_state)
             swap_tiles(new_state1, 0, 0, 0, 1)
             if even_parity(new_state1):
                 heuristic1 = get_heuristic(new_state1)
                 new_node1 = Node(new_state1, heuristic1, root.heuristic_g, False, puzzle_state)
                 root.children.append(new_node1)
 
-            new_state2 = deepcopy(puzzle_state)
+            new_state2 = numpy.copy(puzzle_state)
             swap_tiles(new_state2, 0, 0, 1, 0)
             if even_parity(new_state2):
                 heuristic2 = get_heuristic(new_state2)
@@ -123,21 +120,21 @@ def a_star(root, solution_nodes):
                 root.children.append(new_node2)
 
         if blank_loc[1] == 1:
-            new_state1 = deepcopy(puzzle_state)
+            new_state1 = numpy.copy(puzzle_state)
             swap_tiles(new_state1, 0, 1, 0, 0)
             if even_parity(new_state1):
                 heuristic1 = get_heuristic(new_state1)
                 new_node1 = Node(new_state1, heuristic1, root.heuristic_g, False, puzzle_state)
                 root.children.append(new_node1)
 
-            new_state2 = deepcopy(puzzle_state)
+            new_state2 = numpy.copy(puzzle_state)
             swap_tiles(new_state2, 0, 1, 0, 2)
             if even_parity(new_state2):
                 heuristic2 = get_heuristic(new_state2)
                 new_node2 = Node(new_state2, heuristic2, root.heuristic_g, False, puzzle_state)
                 root.children.append(new_node2)
 
-            new_state3 = deepcopy(puzzle_state)
+            new_state3 = numpy.copy(puzzle_state)
             swap_tiles(new_state3, 0, 1, 1, 1)
             if even_parity(new_state3):
                 heuristic3 = get_heuristic(new_state3)
@@ -145,14 +142,14 @@ def a_star(root, solution_nodes):
                 root.children.append(new_node3)
 
         if blank_loc[1] == 2:
-            new_state1 = deepcopy(puzzle_state)
+            new_state1 = numpy.copy(puzzle_state)
             swap_tiles(new_state1, 0, 2, 0, 1)
             if even_parity(new_state1):
                 heuristic1 = get_heuristic(new_state1)
                 new_node1 = Node(new_state1, heuristic1, root.heuristic_g, False, puzzle_state)
                 root.children.append(new_node1)
 
-            new_state2 = deepcopy(puzzle_state)
+            new_state2 = numpy.copy(puzzle_state)
             swap_tiles(new_state2, 0, 2, 1, 2)
             if even_parity(new_state2):
                 heuristic2 = get_heuristic(new_state2)
@@ -161,21 +158,21 @@ def a_star(root, solution_nodes):
 
     if blank_loc[0] == 1:
         if blank_loc[1] == 0:
-            new_state1 = deepcopy(puzzle_state)
+            new_state1 = numpy.copy(puzzle_state)
             swap_tiles(new_state1, 1, 0, 0, 0)
             if even_parity(new_state1):
                 heuristic1 = get_heuristic(new_state1)
                 new_node1 = Node(new_state1, heuristic1, root.heuristic_g, False, puzzle_state)
                 root.children.append(new_node1)
 
-            new_state2 = deepcopy(puzzle_state)
+            new_state2 = numpy.copy(puzzle_state)
             swap_tiles(new_state2, 1, 0, 2, 0)
             if even_parity(new_state2):
                 heuristic2 = get_heuristic(new_state2)
                 new_node2 = Node(new_state2, heuristic2, root.heuristic_g, False, puzzle_state)
                 root.children.append(new_node2)
 
-            new_state3 = deepcopy(puzzle_state)
+            new_state3 = numpy.copy(puzzle_state)
             swap_tiles(new_state3, 1, 0, 1, 1)
             if even_parity(new_state3):
                 heuristic3 = get_heuristic(new_state3)
@@ -183,28 +180,28 @@ def a_star(root, solution_nodes):
                 root.children.append(new_node3)
 
         if blank_loc[1] == 1:
-            new_state1 = deepcopy(puzzle_state)
+            new_state1 = numpy.copy(puzzle_state)
             swap_tiles(new_state1, 1, 1, 0, 1)
             if even_parity(new_state1):
                 heuristic1 = get_heuristic(new_state1)
                 new_node1 = Node(new_state1, heuristic1, root.heuristic_g, False, puzzle_state)
                 root.children.append(new_node1)
 
-            new_state2 = deepcopy(puzzle_state)
+            new_state2 = numpy.copy(puzzle_state)
             swap_tiles(new_state2, 1, 1, 2, 1)
             if even_parity(new_state2):
                 heuristic2 = get_heuristic(new_state2)
                 new_node2 = Node(new_state2, heuristic2, root.heuristic_g, False, puzzle_state)
                 root.children.append(new_node2)
 
-            new_state3 = deepcopy(puzzle_state)
+            new_state3 = numpy.copy(puzzle_state)
             swap_tiles(new_state3, 1, 1, 1, 0)
             if even_parity(new_state3):
                 heuristic3 = get_heuristic(new_state3)
                 new_node3 = Node(new_state3, heuristic3, root.heuristic_g, False, puzzle_state)
                 root.children.append(new_node3)
 
-            new_state4 = deepcopy(puzzle_state)
+            new_state4 = numpy.copy(puzzle_state)
             swap_tiles(new_state4, 1, 1, 1, 2)
             if even_parity(new_state4):
                 heuristic4 = get_heuristic(new_state4)
@@ -213,21 +210,21 @@ def a_star(root, solution_nodes):
 
         if blank_loc[1] == 2:
 
-            new_state1 = deepcopy(puzzle_state)
+            new_state1 = numpy.copy(puzzle_state)
             swap_tiles(new_state1, 1, 2, 1, 1)
             if even_parity(new_state1):
                 heuristic1 = get_heuristic(new_state1)
                 new_node1 = Node(new_state1, heuristic1, root.heuristic_g, False, puzzle_state)
                 root.children.append(new_node1)
 
-            new_state2 = deepcopy(puzzle_state)
+            new_state2 = numpy.copy(puzzle_state)
             swap_tiles(new_state2, 1, 2, 0, 2)
             if even_parity(new_state2):
                 heuristic2 = get_heuristic(new_state2)
                 new_node2 = Node(new_state2, heuristic2, root.heuristic_g, False, puzzle_state)
                 root.children.append(new_node2)
 
-            new_state3 = deepcopy(puzzle_state)
+            new_state3 = numpy.copy(puzzle_state)
             swap_tiles(new_state3, 1, 2, 2, 2)
             if even_parity(new_state3):
                 heuristic3 = get_heuristic(new_state3)
@@ -237,14 +234,14 @@ def a_star(root, solution_nodes):
     if blank_loc[0] == 2:
         if blank_loc[1] == 0:
 
-            new_state1 = deepcopy(puzzle_state)
+            new_state1 = numpy.copy(puzzle_state)
             swap_tiles(new_state1, 2, 0, 2, 1)
             if even_parity(new_state1):
                 heuristic1 = get_heuristic(new_state1)
                 new_node1 = Node(new_state1, heuristic1, root.heuristic_g, False, puzzle_state)
                 root.children.append(new_node1)
 
-            new_state2 = deepcopy(puzzle_state)
+            new_state2 = numpy.copy(puzzle_state)
             swap_tiles(new_state2, 2, 0, 1, 0)
             if even_parity(new_state2):
                 heuristic2 = get_heuristic(new_state2)
@@ -252,21 +249,21 @@ def a_star(root, solution_nodes):
                 root.children.append(new_node2)
 
         if blank_loc[1] == 1:
-            new_state1 = deepcopy(puzzle_state)
+            new_state1 = numpy.copy(puzzle_state)
             swap_tiles(new_state1, 2, 1, 2, 0)
             if even_parity(new_state1):
                 heuristic1 = get_heuristic(new_state1)
                 new_node1 = Node(new_state1, heuristic1, root.heuristic_g, False, puzzle_state)
                 root.children.append(new_node1)
 
-            new_state2 = deepcopy(puzzle_state)
+            new_state2 = numpy.copy(puzzle_state)
             swap_tiles(new_state2, 2, 1, 1, 1)
             if even_parity(new_state2):
                 heuristic2 = get_heuristic(new_state2)
                 new_node2 = Node(new_state2, heuristic2, root.heuristic_g, False, puzzle_state)
                 root.children.append(new_node2)
 
-            new_state3 = deepcopy(puzzle_state)
+            new_state3 = numpy.copy(puzzle_state)
             swap_tiles(new_state3, 2, 1, 2, 2)
             if even_parity(new_state3):
                 heuristic3 = get_heuristic(new_state3)
@@ -274,14 +271,14 @@ def a_star(root, solution_nodes):
                 root.children.append(new_node3)
 
         if blank_loc[1] == 2:
-            new_state1 = deepcopy(puzzle_state)
+            new_state1 = numpy.copy(puzzle_state)
             swap_tiles(new_state1, 2, 2, 2, 1)
             if even_parity(new_state1):
                 heuristic1 = get_heuristic(new_state1)
                 new_node1 = Node(new_state1, heuristic1, root.heuristic_g, False, puzzle_state)
                 root.children.append(new_node1)
 
-            new_state2 = deepcopy(puzzle_state)
+            new_state2 = numpy.copy(puzzle_state)
             swap_tiles(new_state2, 2, 2, 1, 2)
             if even_parity(new_state2):
                 heuristic2 = get_heuristic(new_state2)
@@ -310,10 +307,10 @@ def a_star(root, solution_nodes):
 
 
 def swap_tiles(puzzle_state, y1, x1, y2, x2):
-    puzzle[y1][x1], puzzle[y2][x2] = puzzle[y2][x2], puzzle[y1][x1]
-    # temp = deepcopy(puzzle_state[pos1[0]][pos1[1]])
-    # puzzle_state[pos1[0]][pos1[1]] = deepcopy(puzzle_state[pos2[0]][pos2[1]])
-    # puzzle_state[pos2[0]][pos2[1]] = deepcopy(temp)
+    puzzle_state[y1][x1], puzzle_state[y2][x2] = puzzle_state[y2][x2], puzzle_state[y1][x1]
+    # temp = numpy.copy(puzzle_state[pos1[0]][pos1[1]])
+    # puzzle_state[pos1[0]][pos1[1]] = numpy.copy(puzzle_state[pos2[0]][pos2[1]])
+    # puzzle_state[pos2[0]][pos2[1]] = numpy.copy(temp)
 
 
 def get_heuristic(puzzle_state) -> int:
@@ -341,5 +338,3 @@ if __name__ == '__main__':
 
     a_star(root_node, solution)
     print(solution)
-
-
