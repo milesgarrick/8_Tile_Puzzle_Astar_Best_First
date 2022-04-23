@@ -3,6 +3,7 @@ import numpy
 
 
 goal_state = numpy.array([[1, 2, 3], [4, 5, 6], [7, 8, 0]])
+total_expansions = 0
 
 
 class Node:
@@ -16,21 +17,20 @@ class Node:
 
 
 def a_star(root, solution_nodes):
-    solution_nodes.append(root)
+    global total_expansions
     pq = []
     expand(root, pq)
+    total_expansions += 1
     while True:
-        if not solution_nodes:
-            return False
+        pq.sort(reverse=False, key=sort_function)
+        temp = pq.pop(0)
+        # Test for goal state
+        if goal_test(temp.tiles):
+            make_solution(temp, solution_nodes)
+            return True
         else:
-            pq.sort(reverse=False, key=sort_function)
-            temp = pq.pop(0)
-            # Test for goal state
-            if goal_test(temp.tiles):
-                make_solution(temp, solution_nodes)
-                return True
-            else:
-                expand(temp, pq)
+            expand(temp, pq)
+            total_expansions += 1
 
 
 def expand(root, pq):
@@ -341,7 +341,7 @@ def get_heuristic(puzzle_state) -> int:
 
 if __name__ == '__main__':
     sys.setrecursionlimit(100000000)
-    puzzle = numpy.array([[1, 2, 3], [4, 7, 5], [6, 0, 8]])
+    puzzle = numpy.array([[1, 2, 3], [4, 0, 8], [7, 6, 5]])
 
     if not even_parity(puzzle):
         print("Odd parity, no solution")
