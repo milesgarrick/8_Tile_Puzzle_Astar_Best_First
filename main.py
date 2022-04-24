@@ -102,8 +102,6 @@ def make_state_2(pq, visited, root, puzzle_state, new_g,
         heuristic1 = get_heuristic(new_state1)
         new_node1 = Node(new_state1, heuristic1, new_g, False, root)
         pq.append(new_node1)
-        print("Adding:")
-        print(new_state1)
 
     new_state2 = numpy.copy(puzzle_state)
     swap_tiles(new_state2, blank_y, blank_x, swap2_y, swap2_x)
@@ -111,10 +109,6 @@ def make_state_2(pq, visited, root, puzzle_state, new_g,
         heuristic2 = get_heuristic(new_state2)
         new_node2 = Node(new_state2, heuristic2, new_g, False, root)
         pq.append(new_node2)
-        print("Adding:")
-        print(new_state2)
-
-    print()
 
 
 # Builds the 3 possible next states if blank is at (0, 1), (1, 2), (2, 1), or (1, 0)
@@ -129,8 +123,6 @@ def make_state_3(pq, visited, root, puzzle_state, new_g,
         heuristic1 = get_heuristic(new_state1)
         new_node1 = Node(new_state1, heuristic1, new_g, False, root)
         pq.append(new_node1)
-        print("Adding:")
-        print(new_state1)
 
     new_state2 = numpy.copy(puzzle_state)
     swap_tiles(new_state2, blank_y, blank_x, swap2_y, swap2_x)
@@ -138,8 +130,6 @@ def make_state_3(pq, visited, root, puzzle_state, new_g,
         heuristic2 = get_heuristic(new_state2)
         new_node2 = Node(new_state2, heuristic2, new_g, False, root)
         pq.append(new_node2)
-        print("Adding:")
-        print(new_state2)
 
     new_state3 = numpy.copy(puzzle_state)
     swap_tiles(new_state3, blank_y, blank_x, swap3_y, swap3_x)
@@ -147,10 +137,6 @@ def make_state_3(pq, visited, root, puzzle_state, new_g,
         heuristic2 = get_heuristic(new_state3)
         new_node3 = Node(new_state3, heuristic2, new_g, False, root)
         pq.append(new_node3)
-        print("Adding:")
-        print(new_state3)
-
-    print()
 
 
 # Builds the 4 possible next states if the blank is at (1, 1)
@@ -330,44 +316,36 @@ def print_tiles(tiles):
 
 
 if __name__ == '__main__':
-    sys.setrecursionlimit(100000000)
-    for x in range(0, 5):
-        if x == 1:
-            puzzle = numpy.array([[4, 5, 0], [6, 1, 8], [7, 3, 2]])
-        elif x == 2:
-            puzzle = numpy.array([[6, 3, 4], [2, 8, 1], [0, 7, 5]])
-        elif x == 3:
-            puzzle = numpy.array([[2, 0, 6], [7, 1, 0], [8, 4, 3]])
-        elif x == 4:
-            puzzle = numpy.array([[1, 0, 7], [8, 2, 4], [5, 3, 6]])
-        else:
-            puzzle = numpy.array([[2, 8, 6], [0, 3, 5], [1, 4, 7]])
+    puzzle = numpy.array([[4, 5, 0], [6, 1, 8], [7, 2, 3]])
+    # puzzle = numpy.array([[6, 3, 4], [2, 8, 1], [7, 5, 0]])
+    # puzzle = numpy.array([[2, 0, 6], [7, 1, 5], [8, 4, 3]])
+    # puzzle = numpy.array([[1, 0, 7], [8, 2, 4], [5, 3, 6]])
+    # puzzle = numpy.array([[2, 8, 6], [0, 3, 5], [1, 4, 7]])
 
-        if not even_parity(puzzle):
-            print("Odd parity, no solution")
-            exit(1)
-        result = True
-        for r in range(0, 3):
-            for c in range(0, 3):
-                if puzzle[r][c] != goal_state[r][c]:
-                    result = False
-        if result:
-            print("Already at goal state")
-            exit(2)
+    if not even_parity(puzzle):
+        print("Odd parity, no solution")
+        print(puzzle)
+        exit(1)
+    result = True
+    for r in range(0, 3):
+        for c in range(0, 3):
+            if puzzle[r][c] != goal_state[r][c]:
+                result = False
+    if result:
+        print("Already at goal state")
+        exit(2)
 
-        root_heuristic = get_tiles_oop(puzzle)  # get_manhattan(puzzle) + get_tiles_oop(puzzle)
-        root_node = Node(puzzle, root_heuristic, 0, True, None)
-        solution = []
-        total_expansions = 0
+    root_heuristic = get_tiles_oop(puzzle)  # get_manhattan(puzzle) + get_tiles_oop(puzzle)
+    root_node = Node(puzzle, root_heuristic, 0, True, None)
+    solution = []
+    total_expansions = 0
 
-        a_star(root_node, solution)
-        solution_count1 = len(solution)
-        solution = list(reversed(solution))
-        solution_counter = 0
-        print()
-        for y in solution:
-            print("=====", solution_counter, "=====")
-            print_tiles(y.tiles)
-            solution_counter += 1
-        print(total_expansions, "total expansions (1)")
-        total_expansions = 0
+    a_star(root_node, solution)
+    solution = list(reversed(solution))
+    solution_counter = 0
+    print()
+    for y in solution:
+        print("=====", solution_counter, "=====")
+        print_tiles(y.tiles)
+        solution_counter += 1
+    print(total_expansions, "total expansions (", solution_counter, ")")
