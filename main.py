@@ -38,9 +38,10 @@ def a_star(root, solution_nodes):
         else:
             print("Failed")
             exit(1)
-        # Test for goal state
 
 
+# Expands a given node by locating the blank tile and calling make_state_x
+# where x is the number of reachable states from the given state
 def expand(root, pq, visited):
     # Gets location of the blank tile
     puzzle_state = root.tiles
@@ -90,6 +91,7 @@ def expand(root, pq, visited):
                          2, 2, 2, 1, 1, 2)
 
 
+# Builds the 2 possible next states if blank is at (0, 0), (0, 2), (2, 2), or (2, 0)
 def make_state_2(pq, visited, root, puzzle_state, new_g,
                  blank_y: int, blank_x: int,
                  swap1_y: int, swap1_x: int,
@@ -100,7 +102,6 @@ def make_state_2(pq, visited, root, puzzle_state, new_g,
         heuristic1 = get_heuristic(new_state1)
         new_node1 = Node(new_state1, heuristic1, new_g, False, root)
         pq.append(new_node1)
-        #visited.append(new_node1)
         print("Adding:")
         print(new_state1)
 
@@ -110,13 +111,13 @@ def make_state_2(pq, visited, root, puzzle_state, new_g,
         heuristic2 = get_heuristic(new_state2)
         new_node2 = Node(new_state2, heuristic2, new_g, False, root)
         pq.append(new_node2)
-        #visited.append(new_node2)
         print("Adding:")
         print(new_state2)
 
     print()
 
 
+# Builds the 3 possible next states if blank is at (0, 1), (1, 2), (2, 1), or (1, 0)
 def make_state_3(pq, visited, root, puzzle_state, new_g,
                  blank_y: int, blank_x: int,
                  swap1_y: int, swap1_x: int,
@@ -128,7 +129,6 @@ def make_state_3(pq, visited, root, puzzle_state, new_g,
         heuristic1 = get_heuristic(new_state1)
         new_node1 = Node(new_state1, heuristic1, new_g, False, root)
         pq.append(new_node1)
-        #visited.append(new_node1)
         print("Adding:")
         print(new_state1)
 
@@ -138,7 +138,6 @@ def make_state_3(pq, visited, root, puzzle_state, new_g,
         heuristic2 = get_heuristic(new_state2)
         new_node2 = Node(new_state2, heuristic2, new_g, False, root)
         pq.append(new_node2)
-        #visited.append(new_node2)
         print("Adding:")
         print(new_state2)
 
@@ -148,13 +147,13 @@ def make_state_3(pq, visited, root, puzzle_state, new_g,
         heuristic2 = get_heuristic(new_state3)
         new_node3 = Node(new_state3, heuristic2, new_g, False, root)
         pq.append(new_node3)
-        #visited.append(new_node3)
         print("Adding:")
         print(new_state3)
 
     print()
 
 
+# Builds the 4 possible next states if the blank is at (1, 1)
 def make_state_4(pq, visited, root, puzzle_state, new_g,
                  blank_y: int, blank_x: int,
                  swap1_y: int, swap1_x: int,
@@ -174,7 +173,6 @@ def make_state_4(pq, visited, root, puzzle_state, new_g,
         heuristic2 = get_heuristic(new_state2)
         new_node2 = Node(new_state2, heuristic2, new_g, False, root)
         pq.append(new_node2)
-        #visited.append(new_node2)
 
     new_state3 = numpy.copy(puzzle_state)
     swap_tiles(new_state3, blank_y, blank_x, swap3_y, swap3_x)
@@ -182,7 +180,6 @@ def make_state_4(pq, visited, root, puzzle_state, new_g,
         heuristic3 = get_heuristic(new_state3)
         new_node3 = Node(new_state3, heuristic3, new_g, False, root)
         pq.append(new_node3)
-        #visited.append(new_node3)
 
     new_state4 = numpy.copy(puzzle_state)
     swap_tiles(new_state4, blank_y, blank_x, swap4_y, swap4_x)
@@ -190,7 +187,6 @@ def make_state_4(pq, visited, root, puzzle_state, new_g,
         heuristic4 = get_heuristic(new_state4)
         new_node4 = Node(new_state4, heuristic4, new_g, False, root)
         pq.append(new_node4)
-        #visited.append(new_node4)
 
 
 # Checks for even parity, returns true if even
@@ -244,6 +240,25 @@ def check_inversions(puzzle_state, val: int, i: int, j: int) -> int:
     return counter
 
 
+# Gets the location of a given state's blank tile
+# For use in determining next possible states
+def get_blank_loc(puzzle_state, blank_loc):
+    for i in range(0, 3):
+        for j in range(0, 3):
+            if puzzle_state[i][j] == 0:
+                blank_loc[0] = i
+                blank_loc[1] = j
+                break
+
+
+# Function for swapping the tiles in positions (y1, x1) and (y2, x2)
+def swap_tiles(puzzle_state, y1, x1, y2, x2):
+    puzzle_state[y1][x1], puzzle_state[y2][x2] = puzzle_state[y2][x2], puzzle_state[y1][x1]
+    # temp = numpy.copy(puzzle_state[pos1[0]][pos1[1]])
+    # puzzle_state[pos1[0]][pos1[1]] = numpy.copy(puzzle_state[pos2[0]][pos2[1]])
+    # puzzle_state[pos2[0]][pos2[1]] = numpy.copy(temp)
+
+
 # Gets Manhattan Distance for a given state
 def get_manhattan(puzzle_state) -> int:
     counter = 0
@@ -267,22 +282,14 @@ def get_tiles_oop(puzzle_state) -> int:
     return counter
 
 
-# Gets the location of a given state's blank tile
-# For use in determining next possible states
-def get_blank_loc(puzzle_state, blank_loc):
-    for i in range(0, 3):
-        for j in range(0, 3):
-            if puzzle_state[i][j] == 0:
-                blank_loc[0] = i
-                blank_loc[1] = j
-                break
+# Calculates h(x) for a given puzzle state
+def get_heuristic(puzzle_state) -> int:
+    return get_tiles_oop(puzzle_state)  # get_manhattan(puzzle_state) + get_tiles_oop(puzzle_state)
 
 
-# Builds the solution path from the goal state to each parent node
-def make_solution(node, solution_nodes):
-    while node:
-        solution_nodes.append(node)
-        node = node.parent
+# Sort function for ordering the priority queue
+def sort_function(node):
+    return node.heuristic_h + node.heuristic_g
 
 
 # Tests a given state against the goal state
@@ -295,9 +302,11 @@ def goal_test(puzzle_state) -> bool:
     return True
 
 
-# Sort function for ordering the priority queue
-def sort_function(node):
-    return node.heuristic_h + node.heuristic_g
+# Builds the solution path from the goal state to each parent node
+def make_solution(node, solution_nodes):
+    while node:
+        solution_nodes.append(node)
+        node = node.parent
 
 
 # Function for formatting the printing of a single step in the solution route
@@ -320,46 +329,45 @@ def print_tiles(tiles):
     print()
 
 
-# Function for swapping the tiles in positions (y1, x1) and (y2, x2)
-def swap_tiles(puzzle_state, y1, x1, y2, x2):
-    puzzle_state[y1][x1], puzzle_state[y2][x2] = puzzle_state[y2][x2], puzzle_state[y1][x1]
-    # temp = numpy.copy(puzzle_state[pos1[0]][pos1[1]])
-    # puzzle_state[pos1[0]][pos1[1]] = numpy.copy(puzzle_state[pos2[0]][pos2[1]])
-    # puzzle_state[pos2[0]][pos2[1]] = numpy.copy(temp)
-
-
-# Calculates h(x) for a given puzzle state
-def get_heuristic(puzzle_state) -> int:
-    return get_tiles_oop(puzzle_state)  # get_manhattan(puzzle_state) + get_tiles_oop(puzzle_state)
-
-
 if __name__ == '__main__':
     sys.setrecursionlimit(100000000)
-    puzzle = numpy.array([[1, 2, 3], [5, 4, 7], [6, 0, 8]])
+    for x in range(0, 5):
+        if x == 1:
+            puzzle = numpy.array([[4, 5, 0], [6, 1, 8], [7, 3, 2]])
+        elif x == 2:
+            puzzle = numpy.array([[6, 3, 4], [2, 8, 1], [0, 7, 5]])
+        elif x == 3:
+            puzzle = numpy.array([[2, 0, 6], [7, 1, 0], [8, 4, 3]])
+        elif x == 4:
+            puzzle = numpy.array([[1, 0, 7], [8, 2, 4], [5, 3, 6]])
+        else:
+            puzzle = numpy.array([[2, 8, 6], [0, 3, 5], [1, 4, 7]])
 
-    if not even_parity(puzzle):
-        print("Odd parity, no solution")
-        exit(1)
-    result = True
-    for r in range(0, 3):
-        for c in range(0, 3):
-            if puzzle[r][c] != goal_state[r][c]:
-                result = False
-    if result:
-        print("Already at goal state")
-        exit(2)
+        if not even_parity(puzzle):
+            print("Odd parity, no solution")
+            exit(1)
+        result = True
+        for r in range(0, 3):
+            for c in range(0, 3):
+                if puzzle[r][c] != goal_state[r][c]:
+                    result = False
+        if result:
+            print("Already at goal state")
+            exit(2)
 
-    root_heuristic = get_tiles_oop(puzzle)  # get_manhattan(puzzle) + get_tiles_oop(puzzle)
-    root_node = Node(puzzle, root_heuristic, 0, True, None)
-    solution = []
-    total_expansions = 0
+        root_heuristic = get_tiles_oop(puzzle)  # get_manhattan(puzzle) + get_tiles_oop(puzzle)
+        root_node = Node(puzzle, root_heuristic, 0, True, None)
+        solution = []
+        total_expansions = 0
 
-    a_star(root_node, solution)
-    solution = list(reversed(solution))
-    solution_counter = 0
-    print()
-    for x in solution:
-        print("=====", solution_counter, "=====")
-        print_tiles(x.tiles)
-        solution_counter += 1
-    print(total_expansions, "total expansions")
+        a_star(root_node, solution)
+        solution_count1 = len(solution)
+        solution = list(reversed(solution))
+        solution_counter = 0
+        print()
+        for y in solution:
+            print("=====", solution_counter, "=====")
+            print_tiles(y.tiles)
+            solution_counter += 1
+        print(total_expansions, "total expansions (1)")
+        total_expansions = 0
