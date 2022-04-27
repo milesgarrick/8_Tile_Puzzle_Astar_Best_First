@@ -1,5 +1,5 @@
-import sys
 import numpy
+import math
 
 
 goal_state = numpy.array([[1, 2, 3], [4, 5, 6], [7, 8, 0]])
@@ -16,13 +16,41 @@ class Node:
         self.children = []
 
 
+def best_first(root, solution_nodes):
+    global total_expansions
+    visited = [root]
+    pq = []
+    expand_bf(root, pq, visited)
+    total_expansions += 1
+    while total_expansions < 100000:
+        if total_expansions % 100 == 0:
+            print(total_expansions, "expansions...")
+        pq.sort(reverse=False, key=sort_function)
+        if pq:
+            temp = pq.pop(0)
+            while check_visited(visited, temp.tiles):
+                temp = pq.pop(0)
+            if goal_test(temp.tiles):
+                make_solution(temp, solution_nodes)
+                return True
+            else:
+                expand_bf(temp, pq, visited)
+                visited.append(temp)
+                total_expansions += 1
+        else:
+            print("Failed")
+            exit(1)
+
+
 def a_star(root, solution_nodes):
     global total_expansions
     visited = [root]
     pq = []
     expand(root, pq, visited)
     total_expansions += 1
-    while total_expansions < 10000:
+    while total_expansions < 100000:
+        if total_expansions % 100 == 0:
+            print(total_expansions, "expansions...")
         pq.sort(reverse=False, key=sort_function)
         if pq:
             temp = pq.pop(0)
@@ -91,6 +119,54 @@ def expand(root, pq, visited):
                          2, 2, 2, 1, 1, 2)
 
 
+def expand_bf(root, pq, visited):
+    # Gets location of the blank tile
+    puzzle_state = root.tiles
+    blank_loc = [0, 0]
+    get_blank_loc(puzzle_state, blank_loc)
+
+    # The next block determines what the next possible states are
+    # based on the current location of the blank tile
+    if blank_loc[0] == 0:
+        if blank_loc[1] == 0:
+            make_state_bf_2(pq, visited, root, puzzle_state,
+                            0, 0, 0, 1, 1, 0)
+
+        if blank_loc[1] == 1:
+            make_state_bf_3(pq, visited, root, puzzle_state,
+                            0, 1, 0, 0, 0, 2, 1, 1)
+
+        if blank_loc[1] == 2:
+            make_state_bf_2(pq, visited, root, puzzle_state,
+                            0, 2, 0, 1, 1, 2)
+
+    if blank_loc[0] == 1:
+        if blank_loc[1] == 0:
+            make_state_bf_3(pq, visited, root, puzzle_state,
+                            1, 0, 0, 0, 2, 0, 1, 1)
+
+        if blank_loc[1] == 1:
+            make_state_bf_4(pq, visited, root, puzzle_state,
+                            1, 1, 1, 2, 0, 1, 2, 1, 1, 0)
+
+        if blank_loc[1] == 2:
+            make_state_bf_3(pq, visited, root, puzzle_state,
+                            1, 2, 1, 1, 0, 2, 2, 2)
+
+    if blank_loc[0] == 2:
+        if blank_loc[1] == 0:
+            make_state_bf_2(pq, visited, root, puzzle_state,
+                            2, 0, 2, 1, 1, 0)
+
+        if blank_loc[1] == 1:
+            make_state_bf_3(pq, visited, root, puzzle_state,
+                            2, 1, 2, 0, 1, 1, 2, 2)
+
+        if blank_loc[1] == 2:
+            make_state_bf_2(pq, visited, root, puzzle_state,
+                            2, 2, 2, 1, 1, 2)
+
+
 # Builds the 2 possible next states if blank is at (0, 0), (0, 2), (2, 2), or (2, 0)
 def make_state_2(pq, visited, root, puzzle_state, new_g,
                  blank_y: int, blank_x: int,
@@ -108,6 +184,25 @@ def make_state_2(pq, visited, root, puzzle_state, new_g,
     if even_parity(new_state2) and not check_visited(visited, new_state2):
         heuristic2 = get_heuristic(new_state2)
         new_node2 = Node(new_state2, heuristic2, new_g, False, root)
+        pq.append(new_node2)
+
+
+def make_state_bf_2(pq, visited, root, puzzle_state,
+                    blank_y: int, blank_x: int,
+                    swap1_y: int, swap1_x: int,
+                    swap2_y: int, swap2_x: int):
+    new_state1 = numpy.copy(puzzle_state)
+    swap_tiles(new_state1, blank_y, blank_x, swap1_y, swap1_x)
+    if even_parity(new_state1) and not check_visited(visited, new_state1):
+        heuristic1 = get_heuristic(new_state1)
+        new_node1 = Node(new_state1, heuristic1, 0, False, root)
+        pq.append(new_node1)
+
+    new_state2 = numpy.copy(puzzle_state)
+    swap_tiles(new_state2, blank_y, blank_x, swap2_y, swap2_x)
+    if even_parity(new_state2) and not check_visited(visited, new_state2):
+        heuristic2 = get_heuristic(new_state2)
+        new_node2 = Node(new_state2, heuristic2, 0, False, root)
         pq.append(new_node2)
 
 
@@ -136,6 +231,33 @@ def make_state_3(pq, visited, root, puzzle_state, new_g,
     if even_parity(new_state3) and not check_visited(visited, new_state3):
         heuristic2 = get_heuristic(new_state3)
         new_node3 = Node(new_state3, heuristic2, new_g, False, root)
+        pq.append(new_node3)
+
+
+def make_state_bf_3(pq, visited, root, puzzle_state,
+                    blank_y: int, blank_x: int,
+                    swap1_y: int, swap1_x: int,
+                    swap2_y: int, swap2_x: int,
+                    swap3_y: int, swap3_x: int):
+    new_state1 = numpy.copy(puzzle_state)
+    swap_tiles(new_state1, blank_y, blank_x, swap1_y, swap1_x)
+    if even_parity(new_state1) and not check_visited(visited, new_state1):
+        heuristic1 = get_heuristic(new_state1)
+        new_node1 = Node(new_state1, heuristic1, 0, False, root)
+        pq.append(new_node1)
+
+    new_state2 = numpy.copy(puzzle_state)
+    swap_tiles(new_state2, blank_y, blank_x, swap2_y, swap2_x)
+    if even_parity(new_state2) and not check_visited(visited, new_state2):
+        heuristic2 = get_heuristic(new_state2)
+        new_node2 = Node(new_state2, heuristic2, 0, False, root)
+        pq.append(new_node2)
+
+    new_state3 = numpy.copy(puzzle_state)
+    swap_tiles(new_state3, blank_y, blank_x, swap3_y, swap3_x)
+    if even_parity(new_state3) and not check_visited(visited, new_state3):
+        heuristic2 = get_heuristic(new_state3)
+        new_node3 = Node(new_state3, heuristic2, 0, False, root)
         pq.append(new_node3)
 
 
@@ -172,6 +294,41 @@ def make_state_4(pq, visited, root, puzzle_state, new_g,
     if even_parity(new_state4) and not check_visited(visited, new_state4):
         heuristic4 = get_heuristic(new_state4)
         new_node4 = Node(new_state4, heuristic4, new_g, False, root)
+        pq.append(new_node4)
+
+
+def make_state_bf_4(pq, visited, root, puzzle_state,
+                    blank_y: int, blank_x: int,
+                    swap1_y: int, swap1_x: int,
+                    swap2_y: int, swap2_x: int,
+                    swap3_y: int, swap3_x: int,
+                    swap4_y: int, swap4_x: int):
+    new_state1 = numpy.copy(puzzle_state)
+    swap_tiles(new_state1, blank_y, blank_x, swap1_y, swap1_x)
+    if even_parity(new_state1) and not check_visited(visited, new_state1):
+        heuristic1 = get_heuristic(new_state1)
+        new_node1 = Node(new_state1, heuristic1, 0, False, root)
+        pq.append(new_node1)
+
+    new_state2 = numpy.copy(puzzle_state)
+    swap_tiles(new_state2, blank_y, blank_x, swap2_y, swap2_x)
+    if even_parity(new_state2) and not check_visited(visited, new_state2):
+        heuristic2 = get_heuristic(new_state2)
+        new_node2 = Node(new_state2, heuristic2, 0, False, root)
+        pq.append(new_node2)
+
+    new_state3 = numpy.copy(puzzle_state)
+    swap_tiles(new_state3, blank_y, blank_x, swap3_y, swap3_x)
+    if even_parity(new_state3) and not check_visited(visited, new_state3):
+        heuristic3 = get_heuristic(new_state3)
+        new_node3 = Node(new_state3, heuristic3, 0, False, root)
+        pq.append(new_node3)
+
+    new_state4 = numpy.copy(puzzle_state)
+    swap_tiles(new_state4, blank_y, blank_x, swap4_y, swap4_x)
+    if even_parity(new_state4) and not check_visited(visited, new_state4):
+        heuristic4 = get_heuristic(new_state4)
+        new_node4 = Node(new_state4, heuristic4, 0, False, root)
         pq.append(new_node4)
 
 
@@ -268,9 +425,23 @@ def get_tiles_oop(puzzle_state) -> int:
     return counter
 
 
+def get_euclidean(puzzle_state) -> int:
+    euclidean_sum = 0
+    for i in range(0, 3):
+        for j in range(0, 3):
+            if puzzle_state[i][j] != 0:
+                if puzzle_state[i][j] != goal_state[i][j]:
+                    m = ((puzzle_state[i][j] - 1) // 3)
+                    n = ((puzzle_state[i][j] - 1) % 3)
+                    euclidean_sum += math.sqrt((abs(m-i) ** 2) + (abs(n-j) ** 2))
+    return euclidean_sum
+
+
 # Calculates h(x) for a given puzzle state
 def get_heuristic(puzzle_state) -> int:
-    return get_tiles_oop(puzzle_state)  # get_manhattan(puzzle_state) + get_tiles_oop(puzzle_state)
+    # return get_manhattan(puzzle_state)
+    # return get_tiles_oop(puzzle_state)
+    return get_euclidean(puzzle_state)
 
 
 # Sort function for ordering the priority queue
@@ -318,8 +489,8 @@ def print_tiles(tiles):
 if __name__ == '__main__':
     puzzle = numpy.array([[4, 5, 0], [6, 1, 8], [7, 2, 3]])
     # puzzle = numpy.array([[6, 3, 4], [2, 8, 1], [7, 5, 0]])
-    # puzzle = numpy.array([[2, 0, 6], [7, 1, 5], [8, 4, 3]])
     # puzzle = numpy.array([[1, 0, 7], [8, 2, 4], [5, 3, 6]])
+    # puzzle = numpy.array([[1, 8, 0], [4, 6, 7], [5, 2, 3]])
     # puzzle = numpy.array([[2, 8, 6], [0, 3, 5], [1, 4, 7]])
 
     if not even_parity(puzzle):
@@ -335,12 +506,13 @@ if __name__ == '__main__':
         print("Already at goal state")
         exit(2)
 
-    root_heuristic = get_tiles_oop(puzzle)  # get_manhattan(puzzle) + get_tiles_oop(puzzle)
+    root_heuristic = get_heuristic(puzzle)
     root_node = Node(puzzle, root_heuristic, 0, True, None)
     solution = []
     total_expansions = 0
 
-    a_star(root_node, solution)
+    # a_star(root_node, solution)
+    best_first(root_node, solution)
     solution = list(reversed(solution))
     solution_counter = 0
     print()
@@ -348,4 +520,4 @@ if __name__ == '__main__':
         print("=====", solution_counter, "=====")
         print_tiles(y.tiles)
         solution_counter += 1
-    print(total_expansions, "total expansions (", solution_counter, ")")
+    print(total_expansions, "total expansions")
